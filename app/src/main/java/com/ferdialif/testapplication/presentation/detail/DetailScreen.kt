@@ -21,6 +21,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -39,9 +41,11 @@ import com.ferdialif.testapplication.ui.theme.DefaultColor
 fun DetailScreen(
     modifier: Modifier = Modifier,
     viewModel: DetailViewModel,
-    id:Int = 0,
-    onBack:()->Unit
+    id: Int = 0,
+    onBack: () -> Unit,
+    onSave: () -> Unit
 ) {
+    val currentData by viewModel.contactData.collectAsState()
     var firstName by remember {
         mutableStateOf("")
     }
@@ -54,6 +58,17 @@ fun DetailScreen(
     var birthData by remember {
         mutableStateOf("")
     }
+    LaunchedEffect(key1 = Unit) {
+        viewModel.readData(id)
+    }
+    LaunchedEffect(key1 = currentData, block = {
+        currentData?.let {
+            firstName = it.firstName
+            lastName = it.lastName
+            email = it.email
+            birthData = it.dateBirth
+        }
+    })
     Column(modifier, horizontalAlignment = Alignment.CenterHorizontally) {
         Card(
             modifier = Modifier
@@ -75,7 +90,7 @@ fun DetailScreen(
                         interactionSource = MutableInteractionSource(),
                         indication = null,
                         onClick = {
-
+                            onBack()
                         })
                 )
                 Text(
@@ -99,7 +114,11 @@ fun DetailScreen(
 
         }
         Spacer(modifier = Modifier.height(16.dp))
-        Text(text = stringResource(R.string.main_information_title), fontWeight = FontWeight.SemiBold, fontSize = 24.sp)
+        Text(
+            text = stringResource(R.string.main_information_title),
+            fontWeight = FontWeight.SemiBold,
+            fontSize = 24.sp
+        )
         Spacer(modifier = Modifier.height(16.dp))
         Row(
             modifier = Modifier
@@ -107,7 +126,9 @@ fun DetailScreen(
                 .padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = stringResource(R.string.first_name), fontWeight = FontWeight.SemiBold, maxLines = 1,
+                text = stringResource(R.string.first_name),
+                fontWeight = FontWeight.SemiBold,
+                maxLines = 1,
                 modifier = Modifier.weight(4F)
             )
             Spacer(modifier = Modifier.weight(1F))
@@ -128,7 +149,7 @@ fun DetailScreen(
                 modifier = Modifier.weight(4F)
             )
             Spacer(modifier = Modifier.weight(1F))
-            OutlinedTextField(value = firstName, onValueChange = {
+            OutlinedTextField(value = lastName, onValueChange = {
                 lastName = it
             }, maxLines = 1, modifier = Modifier.weight(9F))
         }
@@ -139,11 +160,13 @@ fun DetailScreen(
                 .padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = stringResource(R.string.email), fontWeight = FontWeight.SemiBold, maxLines = 1,
+                text = stringResource(R.string.email),
+                fontWeight = FontWeight.SemiBold,
+                maxLines = 1,
                 modifier = Modifier.weight(4F)
             )
             Spacer(modifier = Modifier.weight(1F))
-            OutlinedTextField(value = firstName, onValueChange = {
+            OutlinedTextField(value = email, onValueChange = {
                 email = it
             }, maxLines = 1, modifier = Modifier.weight(9F))
         }
@@ -154,11 +177,13 @@ fun DetailScreen(
                 .padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = stringResource(R.string.birth_date), fontWeight = FontWeight.SemiBold, maxLines = 1,
+                text = stringResource(R.string.birth_date),
+                fontWeight = FontWeight.SemiBold,
+                maxLines = 1,
                 modifier = Modifier.weight(4F)
             )
             Spacer(modifier = Modifier.weight(1F))
-            OutlinedTextField(value = firstName, onValueChange = {
+            OutlinedTextField(value = birthData, onValueChange = {
                 birthData = it
             }, maxLines = 1, modifier = Modifier.weight(9F), trailingIcon = {
                 IconButton(onClick = { }) {

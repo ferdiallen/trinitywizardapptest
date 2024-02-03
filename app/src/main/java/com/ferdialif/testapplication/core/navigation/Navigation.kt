@@ -30,12 +30,12 @@ fun Navigation(
                 modifier = Modifier.fillMaxSize(),
                 viewModel = viewModel,
                 navigateToDetailScreen = {
-                    controller.navigate(Destination.DetailScreen.route+"/$it")
+                    controller.navigate(Destination.DetailScreen.route + "/$it")
                 }
             )
         }
-        composable(route = Destination.DetailScreen.route+"/{id}", arguments = listOf(
-            navArgument("id"){
+        composable(route = Destination.DetailScreen.route + "/{id}", arguments = listOf(
+            navArgument("id") {
                 type = NavType.IntType
             }
         )) {
@@ -47,7 +47,10 @@ fun Navigation(
                     controller.popBackStack()
                 },
                 viewModel = viewModel,
-                id = id
+                id = id,
+                onSave = {
+
+                }
             )
         }
 

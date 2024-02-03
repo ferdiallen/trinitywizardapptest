@@ -71,9 +71,19 @@ fun MainScreen(
     var shouldShowInsert by remember {
         mutableStateOf(false)
     }
+    var searchText by remember {
+        mutableStateOf("")
+    }
     val context = LocalContext.current
     LaunchedEffect(key1 = Unit) {
         viewModel.serializedData(context, R.raw.data)
+    }
+    val searchResult = remember(searchText) {
+        contactData.let{
+            it.filter {result->
+                "${result.firstName} ${result.lastName}".lowercase().contains(searchText.lowercase())
+            }
+        }
     }
     Column(modifier = modifier) {
         Card(
@@ -128,8 +138,10 @@ fun MainScreen(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(horizontal = 16.dp, vertical = 4.dp),
-                    value = "",
-                    onValueChange = {},
+                    value = searchText,
+                    onValueChange = {
+                        searchText = it
+                    },
                     trailingIcon = {
                         IconButton(onClick = {
                             isSearchActive = false
@@ -152,12 +164,24 @@ fun MainScreen(
             modifier = Modifier.padding(horizontal = 16.dp),
             contentPadding = PaddingValues(bottom = 16.dp)
         ) {
-            items(contactData) {
-                ContactItem(modifier = Modifier.size(200.dp), name = {
-                    "${it.firstName} ${it.lastName}"
-                }, onClick = {
-                    navigateToDetailScreen(it.id ?: return@ContactItem)
-                })
+            if(!isSearchActive){
+                items(contactData) {
+                    ContactItem(modifier = Modifier.size(200.dp), name = {
+                        "${it.firstName} ${it.lastName}"
+                    }, onClick = {
+                        navigateToDetailScreen(it.id ?: return@ContactItem)
+                    })
+                }
+            }else{
+                items(searchResult) {
+                    println("Search result : ${it.firstName}")
+                    ContactItem(modifier = Modifier.size(200.dp), name = {
+                        "${it.firstName} ${it.lastName}"
+                    }, onClick = {
+                        navigateToDetailScreen(it.id ?: return@ContactItem)
+                    })
+                }
+
             }
         }
     }
