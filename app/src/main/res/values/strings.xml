@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Test Application</string>
+    <string name="contacts_title">Contacts</string>
+    <string name="insert_new_data_title">Insert New Data</string>
 </resources>
