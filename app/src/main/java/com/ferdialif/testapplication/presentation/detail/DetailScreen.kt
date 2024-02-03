@@ -1,5 +1,6 @@
 package com.ferdialif.testapplication.presentation.detail
 
+import android.icu.text.SimpleDateFormat
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -16,10 +17,14 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -35,15 +40,23 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ferdialif.testapplication.R
+import com.ferdialif.testapplication.data.local.ContactsEntity
 import com.ferdialif.testapplication.ui.theme.DefaultColor
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
+import java.util.Date
+import java.util.Locale
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DetailScreen(
     modifier: Modifier = Modifier,
     viewModel: DetailViewModel,
     id: Int = 0,
-    onBack: () -> Unit,
-    onSave: () -> Unit
+    onBack: () -> Unit
 ) {
     val currentData by viewModel.contactData.collectAsState()
     var firstName by remember {
@@ -57,6 +70,9 @@ fun DetailScreen(
     }
     var birthData by remember {
         mutableStateOf("")
+    }
+    var shouldShowDatePicker by remember {
+        mutableStateOf(false)
     }
     LaunchedEffect(key1 = Unit) {
         viewModel.readData(id)
@@ -100,7 +116,16 @@ fun DetailScreen(
                         interactionSource = MutableInteractionSource(),
                         indication = null,
                         onClick = {
-
+                            viewModel.updateCurrentData(
+                                ContactsEntity(
+                                    currentData?.id,
+                                    firstName,
+                                    lastName,
+                                    dateBirth = birthData,
+                                    email
+                                )
+                            )
+                            onBack()
                         })
                 )
             }
@@ -186,13 +211,30 @@ fun DetailScreen(
             OutlinedTextField(value = birthData, onValueChange = {
                 birthData = it
             }, maxLines = 1, modifier = Modifier.weight(9F), trailingIcon = {
-                IconButton(onClick = { }) {
+                IconButton(onClick = {
+                    shouldShowDatePicker = !shouldShowDatePicker
+                }) {
                     Icon(
                         imageVector = Icons.Filled.DateRange,
                         contentDescription = null
                     )
                 }
             })
+        }
+    }
+    val pickerState = rememberDatePickerState()
+    LaunchedEffect(key1 = pickerState.selectedDateMillis, block = {
+        birthData = SimpleDateFormat(
+            "dd/MM/yyyy",
+            Locale.getDefault()
+        ).format(pickerState.selectedDateMillis ?: 0L)
+    })
+    if (shouldShowDatePicker) {
+        DatePickerDialog(onDismissRequest = {
+            shouldShowDatePicker = false
+        }, confirmButton = {
+        }) {
+            DatePicker(state = pickerState, showModeToggle = false)
         }
     }
 }

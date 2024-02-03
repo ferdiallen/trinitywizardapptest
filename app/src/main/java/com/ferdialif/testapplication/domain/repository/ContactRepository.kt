@@ -11,4 +11,6 @@ class ContactRepository @Inject constructor(
     fun readData() = database.dao().getAllDataFromContacts()
 
     fun getDataFromContacts(id:Int) = database.dao().getDataFromContacts(id)
+
+    suspend fun updateData(data:ContactsEntity) = database.dao().updateCurrentData(data)
 }

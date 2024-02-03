@@ -25,4 +25,8 @@ class DetailViewModel @Inject constructor(
             repository.getDataFromContacts(data)
         }
     }
+
+     fun updateCurrentData(data: ContactsEntity) = viewModelScope.launch(Dispatchers.IO) {
+        repository.updateData(data)
+    }
 }

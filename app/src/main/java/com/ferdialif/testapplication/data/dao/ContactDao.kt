@@ -3,6 +3,7 @@ package com.ferdialif.testapplication.data.dao
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.Update
 import com.ferdialif.testapplication.data.local.ContactsEntity
 import kotlinx.coroutines.flow.Flow
 
@@ -15,5 +16,8 @@ interface ContactDao {
     fun getAllDataFromContacts(): Flow<List<ContactsEntity>>
 
     @Query("SELECT * FROM ContactsEntity where id =:id")
-    fun getDataFromContacts(id:Int): ContactsEntity
+    fun getDataFromContacts(id: Int): ContactsEntity
+
+    @Update
+    suspend fun updateCurrentData(data: ContactsEntity)
 }

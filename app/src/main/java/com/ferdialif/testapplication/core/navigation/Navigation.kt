@@ -47,10 +47,7 @@ fun Navigation(
                     controller.popBackStack()
                 },
                 viewModel = viewModel,
-                id = id,
-                onSave = {
-
-                }
+                id = id
             )
         }
 

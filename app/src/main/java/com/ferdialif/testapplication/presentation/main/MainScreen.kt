@@ -1,5 +1,6 @@
 package com.ferdialif.testapplication.presentation.main
 
+import android.icu.text.SimpleDateFormat
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -27,16 +28,20 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -57,7 +62,9 @@ import androidx.compose.ui.window.Dialog
 import com.ferdialif.testapplication.R
 import com.ferdialif.testapplication.data.local.ContactsEntity
 import com.ferdialif.testapplication.ui.theme.DefaultColor
+import java.util.Locale
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(
     modifier: Modifier = Modifier,
@@ -79,9 +86,10 @@ fun MainScreen(
         viewModel.serializedData(context, R.raw.data)
     }
     val searchResult = remember(searchText) {
-        contactData.let{
-            it.filter {result->
-                "${result.firstName} ${result.lastName}".lowercase().contains(searchText.lowercase())
+        contactData.let {
+            it.filter { result ->
+                "${result.firstName} ${result.lastName}".lowercase()
+                    .contains(searchText.lowercase())
             }
         }
     }
@@ -164,7 +172,7 @@ fun MainScreen(
             modifier = Modifier.padding(horizontal = 16.dp),
             contentPadding = PaddingValues(bottom = 16.dp)
         ) {
-            if(!isSearchActive){
+            if (!isSearchActive) {
                 items(contactData) {
                     ContactItem(modifier = Modifier.size(200.dp), name = {
                         "${it.firstName} ${it.lastName}"
@@ -172,7 +180,7 @@ fun MainScreen(
                         navigateToDetailScreen(it.id ?: return@ContactItem)
                     })
                 }
-            }else{
+            } else {
                 items(searchResult) {
                     println("Search result : ${it.firstName}")
                     ContactItem(modifier = Modifier.size(200.dp), name = {
@@ -190,7 +198,8 @@ fun MainScreen(
             shouldShowInsert = false
         }) {
             InsertNewItem(onSaved = {
-
+                shouldShowInsert = false
+                viewModel.saveNewContact(it)
             })
 
         }
@@ -223,9 +232,10 @@ private fun ContactItem(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun InsertNewItem(
-    onSaved: () -> Unit
+    onSaved: (ContactsEntity) -> Unit
 ) {
     var firstName by remember {
         mutableStateOf("")
@@ -238,6 +248,9 @@ private fun InsertNewItem(
     }
     var birthData by remember {
         mutableStateOf("")
+    }
+    var shouldShowDatePicker by remember {
+        mutableStateOf(false)
     }
     Card(
         modifier = Modifier
@@ -271,14 +284,42 @@ private fun InsertNewItem(
                 Text(text = "Birth Date", fontWeight = FontWeight.SemiBold)
                 OutlinedTextField(value = birthData, onValueChange = {
                     birthData = it
+                }, trailingIcon = {
+                    IconButton(onClick = { shouldShowDatePicker = !shouldShowDatePicker }) {
+                        Icon(
+                            imageVector = Icons.Default.DateRange,
+                            contentDescription = null
+                        )
+                    }
                 })
             }
             Spacer(modifier = Modifier.height(16.dp))
             Button(onClick = {
-                onSaved()
+                onSaved(ContactsEntity(
+                    firstName = firstName,
+                    lastName = lastName,
+                    dateBirth = birthData,
+                    email = email
+                ))
             }, modifier = Modifier.fillMaxWidth()) {
                 Text(text = "Save")
             }
+        }
+    }
+
+    val pickerState = rememberDatePickerState()
+    LaunchedEffect(key1 = pickerState.selectedDateMillis, block = {
+        birthData = SimpleDateFormat(
+            "dd/MM/yyyy",
+            Locale.getDefault()
+        ).format(pickerState.selectedDateMillis ?: 0L)
+    })
+    if (shouldShowDatePicker) {
+        DatePickerDialog(onDismissRequest = {
+            shouldShowDatePicker = false
+        }, confirmButton = {
+        }) {
+            DatePicker(state = pickerState, showModeToggle = false)
         }
     }
 }

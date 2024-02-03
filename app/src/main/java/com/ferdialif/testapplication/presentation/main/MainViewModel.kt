@@ -36,6 +36,10 @@ class MainViewModel @Inject constructor(
         }
     }
 
+    fun saveNewContact(data:ContactsEntity) = viewModelScope.launch(Dispatchers.IO) {
+        repository.insertData(data)
+    }
+
     fun serializedData(context: Context, @RawRes data: Int) =
         viewModelScope.launch(Dispatchers.IO) {
             if (_contactData.value.isNotEmpty()) {
