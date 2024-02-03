@@ -38,6 +38,8 @@ import com.ferdialif.testapplication.ui.theme.DefaultColor
 @Composable
 fun DetailScreen(
     modifier: Modifier = Modifier,
+    viewModel: DetailViewModel,
+    id:Int = 0,
     onBack:()->Unit
 ) {
     var firstName by remember {

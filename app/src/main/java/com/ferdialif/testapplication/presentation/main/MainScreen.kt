@@ -22,6 +22,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -37,6 +38,8 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -45,23 +48,32 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.ferdialif.testapplication.R
+import com.ferdialif.testapplication.data.local.ContactsEntity
 import com.ferdialif.testapplication.ui.theme.DefaultColor
 
 @Composable
 fun MainScreen(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    navigateToDetailScreen: (Int) -> Unit,
+    viewModel: MainViewModel
 ) {
+    val contactData by viewModel.contactData.collectAsState()
     var isSearchActive by remember {
         mutableStateOf(false)
     }
     var shouldShowInsert by remember {
         mutableStateOf(false)
+    }
+    val context = LocalContext.current
+    LaunchedEffect(key1 = Unit) {
+        viewModel.serializedData(context, R.raw.data)
     }
     Column(modifier = modifier) {
         Card(
@@ -140,16 +152,16 @@ fun MainScreen(
             modifier = Modifier.padding(horizontal = 16.dp),
             contentPadding = PaddingValues(bottom = 16.dp)
         ) {
-            items(10) {
+            items(contactData) {
                 ContactItem(modifier = Modifier.size(200.dp), name = {
-                    "Halo"
+                    "${it.firstName} ${it.lastName}"
                 }, onClick = {
-
+                    navigateToDetailScreen(it.id ?: return@ContactItem)
                 })
             }
         }
     }
-    if(shouldShowInsert){
+    if (shouldShowInsert) {
         Dialog(onDismissRequest = {
             shouldShowInsert = false
         }) {
