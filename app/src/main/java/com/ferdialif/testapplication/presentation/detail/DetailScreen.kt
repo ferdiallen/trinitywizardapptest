@@ -37,7 +37,8 @@ import com.ferdialif.testapplication.ui.theme.DefaultColor
 
 @Composable
 fun DetailScreen(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onBack:()->Unit
 ) {
     var firstName by remember {
         mutableStateOf("")
@@ -96,7 +97,7 @@ fun DetailScreen(
 
         }
         Spacer(modifier = Modifier.height(16.dp))
-        Text(text = "Main Information", fontWeight = FontWeight.SemiBold, fontSize = 24.sp)
+        Text(text = stringResource(R.string.main_information_title), fontWeight = FontWeight.SemiBold, fontSize = 24.sp)
         Spacer(modifier = Modifier.height(16.dp))
         Row(
             modifier = Modifier
@@ -104,7 +105,7 @@ fun DetailScreen(
                 .padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "First Name", fontWeight = FontWeight.SemiBold, maxLines = 1,
+                text = stringResource(R.string.first_name), fontWeight = FontWeight.SemiBold, maxLines = 1,
                 modifier = Modifier.weight(4F)
             )
             Spacer(modifier = Modifier.weight(1F))
@@ -119,7 +120,7 @@ fun DetailScreen(
                 .padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "Last Name",
+                text = stringResource(R.string.last_name),
                 fontWeight = FontWeight.SemiBold,
                 maxLines = 1,
                 modifier = Modifier.weight(4F)
@@ -136,7 +137,7 @@ fun DetailScreen(
                 .padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "Email", fontWeight = FontWeight.SemiBold, maxLines = 1,
+                text = stringResource(R.string.email), fontWeight = FontWeight.SemiBold, maxLines = 1,
                 modifier = Modifier.weight(4F)
             )
             Spacer(modifier = Modifier.weight(1F))
@@ -151,7 +152,7 @@ fun DetailScreen(
                 .padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "Birth Date", fontWeight = FontWeight.SemiBold, maxLines = 1,
+                text = stringResource(R.string.birth_date), fontWeight = FontWeight.SemiBold, maxLines = 1,
                 modifier = Modifier.weight(4F)
             )
             Spacer(modifier = Modifier.weight(1F))

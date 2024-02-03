@@ -23,7 +23,10 @@ class MainActivity : ComponentActivity() {
         setContent {
             TestApplicationTheme {
                 DetailScreen(
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier.fillMaxSize(),
+                    onBack = {
+
+                    }
                 )
             }
         }

@@ -4,4 +4,9 @@
     <string name="insert_new_data_title">Insert New Data</string>
     <string name="cancel">Cancel</string>
     <string name="save">Save</string>
+    <string name="main_information_title">Main Information</string>
+    <string name="first_name">First Name</string>
+    <string name="last_name">Last Name</string>
+    <string name="email">Email</string>
+    <string name="birth_date">Birth Date</string>
 </resources>
